@@ -1,3 +1,6 @@
+import 'dart:convert';
+
+import 'package:cloud_notes/notes.dart';
 import 'package:cloud_notes/registrarse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -18,6 +21,60 @@ class _InicioSesionState extends State<InicioSesion> {
 
   String correo = '';
   String pass = '';
+
+  Future<void> guardar_datos(String correo, String pass) async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    await prefs.setString('correo', correo);
+    await prefs.setString('pass', pass);
+  }
+
+  Future<void> enviar_datos() async{
+    var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/iniciar_sesion.php');
+    var response = await http.post(url, body: {
+      'correo': correo,
+      'pass': pass
+    }).timeout(Duration(seconds: 90));
+
+    var respuesta = jsonDecode(response.body);
+
+    if(respuesta["respuesta"] == '1'){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+
+      await prefs.setString('id', respuesta['id'].toString());
+      await prefs.setString('usuario', respuesta['usuario'].toString());
+      await prefs.setString('edad', respuesta['edad']).toString();
+
+      guardar_datos(correo, pass);
+
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (BuildContext context){
+            return new NotasPage();
+          }), (route) => false);
+    }else{
+      print(response.body);
+    }
+  }
+
+  Future<void> ver_datos() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    correo = (await prefs.getString('correo'))!;
+    pass = (await prefs.getString('pass'))!;
+
+    if(correo != null){
+      if(correo != '' ){
+        enviar_datos();
+      }
+    }
+  }
+
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    ver_datos();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +129,7 @@ class _InicioSesionState extends State<InicioSesion> {
                     Container(
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                       child: CupertinoTextField(
-                        controller: c_correo,
+                        controller: c_pass,
                         placeholder: "Contraseña",
                         placeholderStyle: TextStyle(color: Colors.black, fontSize: 15),
                       ),
@@ -88,6 +145,8 @@ class _InicioSesionState extends State<InicioSesion> {
 
                             correo = c_correo.text;
                             pass = c_pass.text;
+
+                            enviar_datos();
 
 
                           }, child: Text("Iniciar Sesión"),

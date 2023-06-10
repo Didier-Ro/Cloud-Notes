@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:cloud_notes/agregarnotas.dart';
 import 'package:cloud_notes/editarnota.dart';
+import 'package:cloud_notes/inicio_sesion.dart';
 import 'package:cloud_notes/registros.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:shared_preferences/shared_preferences.dart';
 
 class NotasPage extends StatefulWidget {
   @override
@@ -14,13 +16,25 @@ class _NotasPageState extends State<NotasPage> {
 
   bool loading = true;
   List<Note> nts = [];
+  String? usuario = '';
+  String? nombre_usu = '';
 
 
   Future<List<Note>> mostrar_notas() async{
-    var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/mostrar_notas.php');
-    var response = await http.post(url).timeout(Duration(seconds: 90));
+    SharedPreferences prefs = await SharedPreferences.getInstance();
 
-    //print(response.body);
+    setState(() {
+      usuario = prefs.getString('id');
+      nombre_usu = prefs.getString('usuario');
+      print(usuario);
+    });
+
+    var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/mostrar_notas.php');
+    var response = await http.post(url, body: {
+      'usuario':usuario
+    }).timeout(Duration(seconds: 90));
+
+    print(response.body);
     final datos = jsonDecode(response.body);
     List<Note> notes = [];
 
@@ -85,7 +99,7 @@ class _NotasPageState extends State<NotasPage> {
     );
   }
 
-  Future eliminar_nota(id) async{
+  Future<void> eliminar_nota(id) async{
 
     var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/eliminar_notas.php');
     var response = await http.post(url, body: {'id': id}).timeout(Duration(seconds: 90));
@@ -105,6 +119,18 @@ class _NotasPageState extends State<NotasPage> {
       mostrar_alerta(response.body);
     }
   }
+
+  Future<void> cerrar_sesion() async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    prefs.clear();
+
+    Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+        builder: (BuildContext context){
+          return new InicioSesion();
+        }), (route) => false);
+  }
+
 
   @override
   void initState() {
@@ -137,11 +163,9 @@ class _NotasPageState extends State<NotasPage> {
               child: Center(
                 child: Column(
                   children: [
-                    CircleAvatar(
-                      radius: 50,
-                    ),
-                    SizedBox(height: 10,),
-                    Text("Didier Rojero", style: TextStyle(color: Colors.white, fontSize: 20),),
+                    Text("Hola", style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),),
+                    SizedBox(height: 30,),
+                    Text(nombre_usu.toString(), style: TextStyle(color: Colors.white, fontSize: 25),),
                   ],
                 ),
               ),
@@ -171,7 +195,7 @@ class _NotasPageState extends State<NotasPage> {
               leading: Icon(Icons.login),
               title: Text("Cerrar Sesion",),
               onTap: (){
-
+                cerrar_sesion();
               },
             ),
           ],

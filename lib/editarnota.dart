@@ -3,6 +3,7 @@ import 'package:cloud_notes/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class EditarNota extends StatefulWidget {
   String id;
@@ -17,10 +18,18 @@ class _EditarNotaState extends State<EditarNota> {
   var c_titulo = TextEditingController();
   var c_cuerpo = TextEditingController();
 
+  String? usuario;
   String? titulo = "";
   String? cuerpo = "";
 
   editar_nota()async{
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+
+    setState(() {
+      usuario = prefs.getString('id');
+      print(usuario);
+    });
+
     var url = Uri.parse("https://xstracel.com.mx/dbcloudnotes/editar_nota.php");
     var response = await http.post(url, body: {
       'id': widget.id,

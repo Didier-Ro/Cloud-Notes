@@ -25,7 +25,7 @@ class _RegistrarseState extends State<Registrarse> {
   String usuario = '';
   String edad = '';
 
-  Future<void> guardar_datos(String correo, String pass)async{
+  Future<void> guardar_datos(String correo, String pass,)async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     await prefs.setString('correo', correo);
@@ -43,9 +43,13 @@ class _RegistrarseState extends State<Registrarse> {
 
     var respuesta = jsonDecode(response.body);
 
+    print(response.body);
+
     if (respuesta["respuesta"] == '1') {
       SharedPreferences prefs = await SharedPreferences.getInstance();
       await prefs.setString('id', respuesta['id'].toString());
+      await prefs.setString('usuario', respuesta['usuario'].toString());
+      await prefs.setString('edad', respuesta['edad'].toString());
 
       guardar_datos(correo, pass);
 
@@ -53,6 +57,8 @@ class _RegistrarseState extends State<Registrarse> {
           builder: (BuildContext context){
             return new NotasPage();
           }), (route) => false);
+    }else{
+      print(respuesta['respuesta']);
     }
   }
 
@@ -167,13 +173,15 @@ class _RegistrarseState extends State<Registrarse> {
 
                             FocusScope.of(context).unfocus();
 
+                            correo = c_correo.text;
+                            pass = c_pass.text;
+                            usuario = c_usuario.text;
+                            edad = c_edad.text;
+
                             if (correo == '' || pass == '' || usuario == '' || edad == ''){
                               mostrar_alerta("Debes llenar todos los datos");
                             }else{
-                              correo = c_correo.text;
-                              pass = c_pass.text;
-                              usuario = c_usuario.text;
-                              edad = c_edad.text;
+                              registrar();
                             }
                           }, child: Text("Registrarse"),
                           style: ElevatedButton.styleFrom(
