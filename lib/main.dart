@@ -1,3 +1,4 @@
+import 'package:cloud_notes/inicio_sesion.dart';
 import 'package:cloud_notes/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
@@ -18,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: NotasPage(),
+      home: InicioSesion(),
       navigatorObservers: [FlutterSmartDialog.observer],
       builder: FlutterSmartDialog.init(),
     );

@@ -64,7 +64,7 @@ class _NotasPageState extends State<NotasPage> {
         context: context,
         builder: (BuildContext context){
           return AlertDialog(
-            title: Text("Amazon"),
+            title: Text("Cloud Notes"),
             content: SingleChildScrollView(
               child: ListBody(
                 children: [
