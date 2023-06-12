@@ -142,6 +142,7 @@ class _RegistrarseState extends State<Registrarse> {
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                       child: CupertinoTextField(
                         controller: c_pass,
+                        obscureText: true,
                         placeholder: "Contraseña",
                         placeholderStyle: TextStyle(color: Colors.black, fontSize: 15),
                       ),

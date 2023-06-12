@@ -1,11 +1,13 @@
 import 'dart:convert';
 
 import 'package:cloud_notes/notes.dart';
+import 'package:cloud_notes/recuperarpass.dart';
 import 'package:cloud_notes/registrarse.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class InicioSesion extends StatefulWidget {
   const InicioSesion({Key? key}) : super(key: key);
@@ -30,6 +32,7 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
   Future<void> enviar_datos() async{
+
     var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/iniciar_sesion.php');
     var response = await http.post(url, body: {
       'correo': correo,
@@ -67,6 +70,43 @@ class _InicioSesionState extends State<InicioSesion> {
         enviar_datos();
       }
     }
+  }
+
+  mostrar_alerta(mensaje){
+    showDialog(
+        context: context,
+        builder: (BuildContext context){
+          return AlertDialog(
+            title: Text("Cloud Notes"),
+            content: SingleChildScrollView(
+              child: ListBody(
+                children: [
+                  Text(mensaje),
+                ],
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: (){
+                  Navigator.of(context).pop();
+                },
+                child: Text("Aceptar"),
+              ),
+            ],
+          );
+        }
+    );
+  }
+
+  void _showLoading() async {
+    setState(() {
+      SmartDialog.showLoading();
+    });
+    enviar_datos().then((value){
+      setState(() {
+        SmartDialog.dismiss();
+      });
+    });
   }
 
   @override
@@ -130,6 +170,7 @@ class _InicioSesionState extends State<InicioSesion> {
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                       child: CupertinoTextField(
                         controller: c_pass,
+                        obscureText: true,
                         placeholder: "Contraseña",
                         placeholderStyle: TextStyle(color: Colors.black, fontSize: 15),
                       ),
@@ -146,8 +187,11 @@ class _InicioSesionState extends State<InicioSesion> {
                             correo = c_correo.text;
                             pass = c_pass.text;
 
-                            enviar_datos();
-
+                            if(correo == "" || pass == ""){
+                              mostrar_alerta("Debes llenar todos los datos");
+                            }else{
+                              _showLoading();
+                            }
 
                           }, child: Text("Iniciar Sesión"),
                           style: ElevatedButton.styleFrom(
@@ -156,6 +200,19 @@ class _InicioSesionState extends State<InicioSesion> {
                           ),
                         ),
                       ],
+                    ),
+                    SizedBox(height: 10,),
+                    Text("¿Olvidaste tu contraseña?", style: TextStyle(color: Colors.white, fontSize: 18),),
+                    SizedBox(height: 10,),
+                    GestureDetector(
+                      onTap: (){
+                        Navigator.of(context).push(MaterialPageRoute(
+                            builder: (BuildContext context){
+                              return Recuperar();
+                            }
+                        ));
+                      },
+                      child: Text("Presiona aquí", style: TextStyle(color: Colors.yellow, fontSize: 16),),
                     ),
                     SizedBox(height: 15,),
                     Text("¿Nuevo en Cloud Notes?", style: TextStyle(color: Colors.white, fontSize: 18),),
