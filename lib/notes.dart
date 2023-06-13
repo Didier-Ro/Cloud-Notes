@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_notes/agregarnotas.dart';
 import 'package:cloud_notes/editarnota.dart';
 import 'package:cloud_notes/inicio_sesion.dart';
+import 'package:cloud_notes/perfil.dart';
 import 'package:cloud_notes/registros.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -163,7 +164,7 @@ class _NotasPageState extends State<NotasPage> {
               child: Center(
                 child: Column(
                   children: [
-                    Text("Hola", style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),),
+                    Text("¡Hola!", style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),),
                     SizedBox(height: 30,),
                     Text(nombre_usu.toString(), style: TextStyle(color: Colors.white, fontSize: 25),),
                   ],
@@ -174,7 +175,11 @@ class _NotasPageState extends State<NotasPage> {
               leading: Icon(Icons.person),
               title: Text("Usuario",),
               onTap: (){
-
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (BuildContext context){
+                    return Perfil();
+                  }
+                ));
               },
             ),
             ListTile(

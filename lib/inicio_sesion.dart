@@ -69,6 +69,10 @@ class _InicioSesionState extends State<InicioSesion> {
       if(correo != '' ){
         enviar_datos();
       }
+      else{
+        correo = '';
+        pass = '';
+      }
     }
   }
 
