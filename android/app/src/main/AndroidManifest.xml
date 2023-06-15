@@ -7,7 +7,7 @@
     <uses-permission android:name="android.permissions.CAMERA"/>
 
    <application
-        android:label="cloud_notes"
+        android:label="Cloud Notes"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity

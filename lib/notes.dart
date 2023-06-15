@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:cloud_notes/agregarnotas.dart';
 import 'package:cloud_notes/editarnota.dart';
 import 'package:cloud_notes/inicio_sesion.dart';
+import 'package:cloud_notes/pagos.dart';
 import 'package:cloud_notes/perfil.dart';
 import 'package:cloud_notes/registros.dart';
 import 'package:flutter/material.dart';
@@ -186,7 +187,11 @@ class _NotasPageState extends State<NotasPage> {
               leading: Icon(Icons.money),
               title: Text("Pagos",),
               onTap: (){
-
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context){
+                      return PaymentScreen();
+                    }
+                ));
               },
             ),
             ListTile(
