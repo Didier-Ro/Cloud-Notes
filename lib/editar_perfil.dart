@@ -8,6 +8,7 @@ import 'package:dio/dio.dart';
 import 'package:image_cropper/image_cropper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:http/http.dart' as http;
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class EditarPerfil extends StatefulWidget {
   const EditarPerfil({Key? key}) : super(key: key);
@@ -42,16 +43,28 @@ class _EditarPerfilState extends State<EditarPerfil> {
     }else{
       pickedFile = await picker.pickImage(source: ImageSource.gallery);
     }
-
     setState(() {
       if(pickedFile != null){
-        imagen = File(pickedFile.path);
+        //imagen = File(pickedFile.path);
         //subirImagen();
-        //cortar(File(pickedFile.path));
+        cortar(File(pickedFile.path));
       }else{
         print("No se encontró nada");
       }
     });
+  }
+
+  cortar(picked) async{
+    CroppedFile? cortado = await ImageCropper().cropImage(
+        sourcePath: picked.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1)
+    );
+
+    if(cortado != null){
+      setState(() {
+        imagen = File(cortado.path);
+      });
+    }
   }
 
   seleccionar(){
@@ -228,6 +241,16 @@ class _EditarPerfilState extends State<EditarPerfil> {
         }
     );
   }
+  void _showLoading() async {
+    setState(() {
+      SmartDialog.showLoading();
+    });
+    editar_datos().then((value){
+      setState(() {
+        SmartDialog.dismiss();
+      });
+    });
+  }
 
   @override
   void initState() {
@@ -258,15 +281,6 @@ class _EditarPerfilState extends State<EditarPerfil> {
                 child: Container(
                   child: Column(
                     children: [
-                      SizedBox(height: 30,),
-                      GestureDetector(
-                        onTap: (){
-                          seleccionar();
-                        },
-                        child: ClipOval(
-                          child: Image.network('https://xstracel.com.mx/dbcloudnotes/imgperfil/'+user_avatar,fit: BoxFit.cover, width: 100, height: 100,),
-                        ),
-                      ),
                       SizedBox(height: 20,),
                       Text("Usuario", style: TextStyle(color: Colors.yellow, fontSize: 16),),
                       Container(
@@ -318,7 +332,7 @@ class _EditarPerfilState extends State<EditarPerfil> {
                           mostrar_alerta("Uno de los datos está vacio");
                         }else{
                           if(pass == confirm_pass){
-                            subirImagen();
+                            _showLoading();
                           }else{
                             mostrar_alerta("Las contraseñas no coinciden");
                           }

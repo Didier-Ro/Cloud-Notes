@@ -1,10 +1,15 @@
+import 'dart:convert';
+
 import 'package:cloud_notes/editar_perfil.dart';
+import 'package:cloud_notes/notes.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import 'package:dio/dio.dart';
 import 'package:http/http.dart' as http;
+import 'package:image_cropper/image_cropper.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_smart_dialog/flutter_smart_dialog.dart';
 
 class Perfil extends StatefulWidget {
   const Perfil({Key? key}) : super(key: key);
@@ -36,13 +41,27 @@ class _PerfilState extends State<Perfil> {
 
     setState(() {
       if(pickedFile != null){
-        imagen = File(pickedFile.path);
-        subirImagen();
-        //cortar(File(pickedFile.path));
+        //imagen = File(pickedFile.path);
+        //subirImagen();
+        cortar(File(pickedFile.path));
       }else{
         print("No se encontró nada");
       }
     });
+  }
+
+  cortar(picked) async{
+    CroppedFile? cortado = await ImageCropper().cropImage(
+        sourcePath: picked.path,
+        aspectRatio: CropAspectRatio(ratioX: 1, ratioY: 1)
+    );
+
+    if(cortado != null){
+      setState(() {
+        imagen = File(cortado.path);
+        subirImagen();
+      });
+    }
   }
 
   seleccionar(){
@@ -141,6 +160,7 @@ class _PerfilState extends State<Perfil> {
           data: formData).then((value){
         if(value.toString() == '1'){
           print("Se subió la imagen correctamente");
+          _showLoading();
         }else{
           print(value.toString());
         }
@@ -148,6 +168,23 @@ class _PerfilState extends State<Perfil> {
 
     }catch(e){
       print(e.toString());
+    }
+  }
+
+  Future<void> obtener_imagen() async{
+    var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/obtener_imagen.php');
+    var response = await http.post(url, body: {
+      'id': id
+    }).timeout(Duration(seconds: 90));
+
+    var respuesta = jsonDecode(response.body);
+    if(respuesta['respuesta'] == '1'){
+      SharedPreferences prefs = await SharedPreferences.getInstance();
+      prefs.setString('img', respuesta['img']);
+      Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(
+          builder: (BuildContext context){
+            return new NotasPage();
+          }), (route) => false);
     }
   }
 
@@ -163,6 +200,17 @@ class _PerfilState extends State<Perfil> {
       user_avatar = prefs.getString('img').toString();
     });
     print(id);
+  }
+
+  void _showLoading() async {
+    setState(() {
+      SmartDialog.showLoading();
+    });
+    obtener_imagen().then((value){
+      setState(() {
+        SmartDialog.dismiss();
+      });
+    });
   }
 
   @override

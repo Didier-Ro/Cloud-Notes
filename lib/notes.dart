@@ -1,10 +1,12 @@
 import 'dart:convert';
 import 'package:cloud_notes/agregarnotas.dart';
+import 'package:cloud_notes/agregarpagos.dart';
 import 'package:cloud_notes/editarnota.dart';
 import 'package:cloud_notes/inicio_sesion.dart';
 import 'package:cloud_notes/pagos.dart';
 import 'package:cloud_notes/perfil.dart';
 import 'package:cloud_notes/registros.dart';
+import 'package:cloud_notes/subscripcion.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:shared_preferences/shared_preferences.dart';
@@ -18,16 +20,18 @@ class _NotasPageState extends State<NotasPage> {
 
   bool loading = true;
   List<Note> nts = [];
-  String? usuario = '';
-  String? nombre_usu = '';
+  String usuario = '';
+  String nombre_usu = '';
+  String user_avatar = '';
 
 
   Future<List<Note>> mostrar_notas() async{
     SharedPreferences prefs = await SharedPreferences.getInstance();
 
     setState(() {
-      usuario = prefs.getString('id');
-      nombre_usu = prefs.getString('usuario');
+      usuario = prefs.getString('id').toString();
+      nombre_usu = prefs.getString('usuario').toString();
+      user_avatar = prefs.getString('img').toString();
       print(usuario);
     });
 
@@ -165,8 +169,13 @@ class _NotasPageState extends State<NotasPage> {
               child: Center(
                 child: Column(
                   children: [
+                    ClipOval(
+                      child: ClipOval(
+                        child: Image.network('https://xstracel.com.mx/dbcloudnotes/imgperfil/'+user_avatar,fit: BoxFit.cover, width: 60, height: 60,),
+                      ),
+                    ),
                     Text("¡Hola!", style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),),
-                    SizedBox(height: 30,),
+                    SizedBox(height: 10,),
                     Text(nombre_usu.toString(), style: TextStyle(color: Colors.white, fontSize: 25),),
                   ],
                 ),
@@ -185,20 +194,24 @@ class _NotasPageState extends State<NotasPage> {
             ),
             ListTile(
               leading: Icon(Icons.money),
-              title: Text("Pagos",),
+              title: Text("Subscripción",),
               onTap: (){
                 Navigator.of(context).push(MaterialPageRoute(
                     builder: (BuildContext context){
-                      return PaymentScreen();
+                      return Subscripcion();
                     }
                 ));
               },
             ),
             ListTile(
-              leading: Icon(Icons.settings),
-              title: Text("Configuraciones",),
+              leading: Icon(Icons.payment),
+              title: Text("Métodos de pago",),
               onTap: (){
-
+                Navigator.of(context).push(MaterialPageRoute(
+                    builder: (BuildContext context){
+                      return AgregarPagos();
+                    }
+                ));
               },
             ),
             ListTile(

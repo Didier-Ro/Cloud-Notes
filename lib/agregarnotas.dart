@@ -52,7 +52,7 @@ class _AgregarNotasState extends State<AgregarNotas> {
         context: context,
         builder: (BuildContext context){
           return AlertDialog(
-            title: Text("Amazon"),
+            title: Text("Cloud Notes"),
             content: SingleChildScrollView(
               child: ListBody(
                 children: [
