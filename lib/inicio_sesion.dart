@@ -32,7 +32,6 @@ class _InicioSesionState extends State<InicioSesion> {
   }
 
   Future<void> enviar_datos() async{
-
     var url = Uri.parse('https://xstracel.com.mx/dbcloudnotes/iniciar_sesion.php');
     var response = await http.post(url, body: {
       'correo': correo,
@@ -46,7 +45,8 @@ class _InicioSesionState extends State<InicioSesion> {
 
       await prefs.setString('id', respuesta['id'].toString());
       await prefs.setString('usuario', respuesta['usuario'].toString());
-      await prefs.setString('edad', respuesta['edad']).toString();
+      await prefs.setString('edad', respuesta['edad'].toString());
+      await prefs.setString('img', respuesta['img'].toString());
 
       guardar_datos(correo, pass);
 

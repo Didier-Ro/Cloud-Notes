@@ -50,6 +50,7 @@ class _RegistrarseState extends State<Registrarse> {
       await prefs.setString('id', respuesta['id'].toString());
       await prefs.setString('usuario', respuesta['usuario'].toString());
       await prefs.setString('edad', respuesta['edad'].toString());
+      await prefs.setString('img', respuesta['img'].toString());
 
       guardar_datos(correo, pass);
 
@@ -161,6 +162,7 @@ class _RegistrarseState extends State<Registrarse> {
                       padding: EdgeInsets.symmetric(vertical: 5, horizontal: 5),
                       child: CupertinoTextField(
                         controller: c_edad,
+                        keyboardType: TextInputType.number,
                         placeholder: "Edad",
                         placeholderStyle: TextStyle(color: Colors.black, fontSize: 15),
                       ),

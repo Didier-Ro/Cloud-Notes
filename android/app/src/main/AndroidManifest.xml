@@ -1,5 +1,11 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.example.cloud_notes">
+
+    <uses-permission android:name="android.permissions.READ_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permissions.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permissions.INTERNET"/>
+    <uses-permission android:name="android.permissions.CAMERA"/>
+
    <application
         android:label="cloud_notes"
         android:name="${applicationName}"
