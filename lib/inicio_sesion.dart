@@ -57,6 +57,9 @@ class _InicioSesionState extends State<InicioSesion> {
     }else{
       print(response.body);
     }
+    if (respuesta['respuesta'] == 'Hubo un error'){
+      mostrar_alerta('Correo o contraseña inválidos');
+    }
   }
 
   Future<void> ver_datos() async{
